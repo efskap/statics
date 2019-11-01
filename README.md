@@ -73,8 +73,9 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	mime := http.DetectContentType(f)
-	w.Header().Set("Content-Type", mime)
+	ext := filepath.Ext(fName)
+	mimeType := mime.TypeByExtension(ext)
+	w.Header().Set("Content-Type", mimeType)
 	_, err := w.Write(f)
 	if err != nil {
 	    fmt.Println(err.Error())
