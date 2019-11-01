@@ -1,6 +1,6 @@
 **Statics**  
 The purpose of Statics is to make it dead simple to embed external files into a Go binary.  
-By default, it takes all of the files in your ./include folder and embeds them as byte arrays in map called files in a separate .go file called files.go.    
+By default, it takes all of the files in your `./include` folder and embeds them as byte arrays in a map called `files` in a separate .go file called `files.go`.    
 
 **Install**  
 `go get github.com/jerblack/statics`  
@@ -54,7 +54,7 @@ The example below shows how it can be used.
 
 ```go
 func main() {
-    	http.HandleFunc("/", serveFiles)
+    http.HandleFunc("/", serveFiles)
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
