@@ -4,7 +4,6 @@ By default, it takes all of the files in your `./include` folder and embeds them
 
 **Install**  
 `go get github.com/jerblack/statics`  
-`go install github.com/jerblack/statics`  
 
 This will create a file called `statics[.exe]` in `GOPATH/bin`.
 
