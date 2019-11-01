@@ -54,7 +54,7 @@ The example below shows how it can be used.
 
 ```go
 func main() {
-    http.HandleFunc("/", serveFiles)
+    	http.HandleFunc("/", serveFiles)
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
@@ -69,30 +69,18 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 	case strings.HasPrefix(p, "/static"):
 		fName = strings.TrimPrefix(p, "/static/")
 	default:
-		http.Error(w, http.StatusText(http.StatusNotFound),
-			http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
+	
 	f, ok := files[fName]  // <- the files map is what is provided by statics
 	if !ok {
-		http.Error(w, http.StatusText(http.StatusNotFound),
-			http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	ext := path.Ext(fName)
-	mimes := map[string]string {
-		".js": "application/javascript",
-		".png": "images/png",
-		".jpg": "images/jpeg",
-		".css": "text/css",
-		".html": "text/html",
-	}
-	mime, ok := mimes[ext]
-	if !ok {
-		mime = "application/octet-stream"
-	}
+	
+	mime := http.DetectContentType(f)
 	w.Header().Set("Content-Type", mime)
-	w.WriteHeader(http.StatusOK)
 	_, err := w.Write(f)
     if err != nil {
         fmt.Println(err.Error())
