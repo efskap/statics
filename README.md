@@ -9,7 +9,7 @@ By default, it takes all of the files in your ./include folder and embeds them a
 This will create a file called `statics[.exe]` in `GOPATH/bin`.
 
 **Usage**  
-Statics is intended to do the right thing by default so you can just run `statics` and assuming you have a folder called `./include ` with files inside. a new `./files.go` will be generated (or overwritten).  
+Statics is intended to do the right thing by default so you can just run `statics` and assuming you have a folder called `./include ` with files inside, a new `./files.go` will be generated (or overwritten).  
 However, the default behavior can be changed. Run `statics -h` to see the available options.  
 
 ```
@@ -32,7 +32,25 @@ Flags:
 ```
 Just be sure to re-run `statics` after modifying any of the files in your `./include` folder. My build script usually starts with something like `statics && go build`.
 
-**Examples**
+**Example**  
+A typical generated `files.go` will look something like this.  
+```go
+package main
+
+var files = map[string][]byte{
+
+	"index.htm": []byte{108, 101, 116, ...},
+
+	"favicon.png": []byte{137, 80, 78, ...},
+
+	"code.js": []byte{60, 33, 68, 79, ...},
+
+	"style.css": []byte{104, 116, 109, ...},
+}
+
+```
+
+The example below shows how it can be used.  
 
 ```go
 func main() {
