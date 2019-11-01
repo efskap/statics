@@ -34,7 +34,7 @@ func main() {
 	fileMap := flag.String("map", "files", "name of the generated files map")
 	verbose := flag.Bool("verbose", false, "")
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "statics generates a .go file out of all the files in your include folder as a map[string][]bytee.\n\n")
+		fmt.Fprintf(os.Stderr, "By default, statics takes all of the files in your ./include folder and embeds them as byte arrays in a map called files in a separate .go file called files.go.\n\n")
 		fmt.Fprintf(os.Stderr, "Usage:\n\n")
 		fmt.Fprintf(os.Stderr, "  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files]\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n\n")
