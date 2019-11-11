@@ -97,4 +97,3 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 
 **Credit**  
 Statics was distilled down from https://github.com/leighmcculloch/embedfiles.   
-Look at that version if you want to retain the folder path of your files in the file name in the map.  
