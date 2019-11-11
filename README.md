@@ -1,6 +1,6 @@
 **Statics**  
 The purpose of Statics is to make it dead simple to embed external files into a Go binary.  
-By default, it takes all of the files in your `./include` folder and embeds them as byte arrays in a map called `files` in a separate .go file called `files.go`.    
+By default, it takes all of the files in your ./include folder and embeds them as byte arrays in map called files in a separate .go file called files.go.    
 
 **Install**  
 `go get github.com/jerblack/statics`  
@@ -14,10 +14,12 @@ However, the default behavior can be changed. Run `statics -h` to see the availa
 ```
 Usage:
 
-  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files]
+  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files] [-k] [-x="file1 | file2 | file3"] [-v]
 
 Flags:
 
+  -k    retain directory path in file names used as keys in file map.
+        dirname/filename stays dirname/filename instead of just filename in the file map
   -map string
         name of the generated files map (default "files")
   -out file
@@ -26,7 +28,12 @@ Flags:
         dir path with files to embed (default "./include")
   -pkg package
         package name of the go file (default "main")
-  -verbose
+  -v    verbose
+  -x string
+        pipe-separated list of files in include path to exclude.
+        Files in include or subfolders of include with matching name will be excluded.
+        Surround whole list with quotes like: "file1 | file2 | file3"
+
 
 ```
 Just be sure to re-run `statics` after modifying any of the files in your `./include` folder. My build script usually starts with something like `statics && go build`.
@@ -37,11 +44,16 @@ A typical generated `files.go` will look something like this.
 package main
 
 var files = map[string][]byte{
+
 	"index.htm": []byte{108, 101, 116, ...},
+
 	"favicon.png": []byte{137, 80, 78, ...},
+
 	"code.js": []byte{60, 33, 68, 79, ...},
+
 	"style.css": []byte{104, 116, 109, ...},
 }
+
 ```
 
 The example below shows how it can be used.  
@@ -63,23 +75,22 @@ func serveFiles(w http.ResponseWriter, r *http.Request) {
 	case strings.HasPrefix(p, "/static"):
 		fName = strings.TrimPrefix(p, "/static/")
 	default:
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound),
+			http.StatusNotFound)
 		return
 	}
-	
 	f, ok := files[fName]  // <- the files map is what is provided by statics
 	if !ok {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	
 	ext := filepath.Ext(fName)
-	mimeType := mime.TypeByExtension(ext)
-	w.Header().Set("Content-Type", mimeType)
+    mimeType := mime.TypeByExtension(ext)
+    w.Header().Set("Content-Type", mimeType)
 	_, err := w.Write(f)
-	if err != nil {
-	    fmt.Println(err.Error())
-	}
+    if err != nil {
+        fmt.Println(err.Error())
+    }
 }
 
 ```
