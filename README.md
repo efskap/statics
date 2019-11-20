@@ -12,12 +12,13 @@ Statics is intended to do the right thing by default so you can just run `static
 However, the default behavior can be changed. Run `statics -h` to see the available options.  
 
 ```
-By default, statics takes all of the files in your ./include folder and embeds them as byte arrays in a map called files in a separate .go f
-ile called files.go.
+By default, statics takes all of the files in your ./include folder and embeds them as byte arrays 
+in a map called files in a separate .go file called files.go.
 
 Usage:
 
-  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files] [-k] [-x="file1 | file2 | file3"] [-i="file1 | file 2 | file3"] [-v]
+  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files] [-k] 
+  	[-x="file1 | file2 | file3"] [-i="file1 | file 2 | file3"] [-v]
 
 Flags:
 
@@ -45,7 +46,8 @@ Flags:
 
 Wildcards:
 
--x and -i both support wildcard expressions. Filenames and wilcards will be matched in any subfolder in the include path.
+-x and -i both support wildcard expressions. 
+Filenames and wilcards will be matched in any subfolder in the include path.
 Matching follows the pattern defined in https://golang.org/pkg/path/filepath/#Match
 pattern:
         { term }
