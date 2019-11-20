@@ -18,14 +18,14 @@ in a map called files in a separate .go file called files.go.
 Usage:
 
   statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files] [-k] 
-  	[-x="file1 | file2 | file3"] [-i="file1 | file 2 | file3"] [-v]
+  	[-x="file1 | file.* | img?/*png | file3"] [-i="file1 | file.* | img?/*png | file3"] [-v]
 
 Flags:
 
   -i string
         pipe-separated list of files in include path to include.
         Only files in include folder or subfolders with matching name will be included.
-        Surround whole list with quotes like: "file1 | file2 | file3"
+        Surround whole list with quotes like: "file1 | file.* | img?/*png | file3"
         Wildcard expressions are supported.
   -k    retain directory path in file names used as keys in file map.
         dirname/filename stays dirname/filename instead of just filename in the file map
