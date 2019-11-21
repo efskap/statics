@@ -59,26 +59,31 @@ func parseFileList(ef string) *[]string {
 }
 
 func main() {
-	out := flag.String("out", "files.go", "output go `file`")
+	out := flag.String("out", "files.go", "Output go `file`")
 	pkg := flag.String("pkg", "main", "`package` name of the go file")
-	include = filepath.Clean(*flag.String("p", "./include", "dir path with files to embed"))
-	fileMap := flag.String("map", "files", "name of the generated files map")
-	verbose := flag.Bool("v", false, "verbose")
-	keepDirs := flag.Bool("k", false, "retain directory path in file names used as keys in file map.\ndirname/filename stays dirname/filename instead of just filename in the file map")
-	excludeFiles := flag.String("x", "", "pipe-separated list of files in include path to exclude.\n" +
+	include = filepath.Clean(*flag.String("p", "./include", "Folder path with files to embed relative to current working directory."))
+	fileMap := flag.String("map", "files", "Name of the generated files map")
+	verbose := flag.Bool("v", false, "Verbose")
+	keepDirs := flag.Bool("k", false, "Retain directory path in file names used as keys in file map.\nDirname/filename stays dirname/filename instead of just filename in the file map.")
+	excludeFiles := flag.String("x", "", "Pipe-separated list of files in include path to exclude.\n" +
 		"Files in include folder or subfolders with matching name will be excluded.\nSurround whole list with quotes like: \"file1 | file.* | img?/*png | file3\"\n" +
 		"Wildcard expressions are supported.")
-	includeFiles := flag.String("i", "", "pipe-separated list of files in include path to include.\n" +
-		"Only files in include folder or subfolders with matching name will be included.\nSurround whole list with quotes like: \"file1 | file2 | file3\"\n" +
+	includeFiles := flag.String("i", "", "Pipe-separated list of files in include path to include.\n" +
+		"Only files in include folder or subfolders with matching name will be included.\nSurround whole list with quotes like: \"file1 | file.* | img?/*png | file3\"\n" +
 		"Wildcard expressions are supported.")
+	buildFlags := flag.String("bf", "", "Specify build flags to put at the top of the .go file.\n eg: \"// +build !windows,!darwin\"\n" +
+		"Additional line break is required after build flag and will be added automatically.")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "By default, statics takes all of the files in your ./include folder and embeds them as byte arrays in a map called files in a separate .go file called files.go.\n\n")
 		fmt.Fprintf(os.Stderr, "Usage:\n\n")
-		fmt.Fprintf(os.Stderr, "  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files] [-k] [-x=\"file1 | file2 | file3\"] [-i=\"file1 | file 2 | file3\"] [-v]\n\n")
+		fmt.Fprintf(os.Stderr, "  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files] [-k]\n" +
+			"   [-x=\"file1 | file.* | img?/*png | file3\"] [-i=\"file1 | file.* | img?/*png | file3\"]\n" +
+			"   [-bf=\"// +build !windows,!darwin\"] [-v]\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n\n")
 		flag.PrintDefaults()
-		fmt.Fprintf(os.Stderr, `Wildcards:
+		fmt.Fprintf(os.Stderr, `
+Wildcards:
 
 -x and -i both support wildcard expressions. Filenames and wilcards will be matched in any subfolder in the include path.
 Matching follows the pattern defined in https://golang.org/pkg/path/filepath/#Match
@@ -168,6 +173,17 @@ character-range:
 	if err != nil {
 		printErr("walking", err)
 		return
+	}
+
+	if *buildFlags != "" {
+		if *verbose {
+			fmt.Println("Writing build flag: ", *buildFlags)
+		}
+		_, err = fmt.Fprintln(f, *buildFlags + "\n")
+		if err != nil {
+			printErr("writing build flag", err)
+			return
+		}
 	}
 
 	t, err := template.New("").Parse(tmpl)
