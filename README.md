@@ -12,42 +12,46 @@ Statics is intended to do the right thing by default so you can just run `static
 However, the default behavior can be changed. Run `statics -h` to see the available options.  
 
 ```
-By default, statics takes all of the files in your ./include folder and embeds them as byte arrays 
-in a map called files in a separate .go file called files.go.
+By default, statics takes all of the files in your ./include folder and 
+embeds them as byte arrays in a map called files in a separate .go file called files.go.
 
 Usage:
 
-  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files] [-k] 
-  	[-x="file1 | file.* | img?/*png | file3"] [-i="file1 | file.* | img?/*png | file3"] [-v]
+  statics [-p=./include] [-out=files.go] [-pkg=main] [-map=files] [-k]
+   [-x="file1 | file.* | img?/*png | file3"] [-i="file1 | file.* | img?/*png | file3"]
+   [-bf="// +build !windows,!darwin"] [-v]
 
 Flags:
 
+  -bf string
+        Specify build flags to put at the top of the .go file.
+         eg: "// +build !windows,!darwin"
+        Additional line break is required after build flag and will be added automatically.
   -i string
-        pipe-separated list of files in include path to include.
+        Pipe-separated list of files in include path to include.
         Only files in include folder or subfolders with matching name will be included.
         Surround whole list with quotes like: "file1 | file.* | img?/*png | file3"
         Wildcard expressions are supported.
-  -k    retain directory path in file names used as keys in file map.
-        dirname/filename stays dirname/filename instead of just filename in the file map
+  -k    Retain directory path in file names used as keys in file map.
+        Dirname/filename stays dirname/filename instead of just filename in the file map.
   -map string
-        name of the generated files map (default "files")
+        Name of the generated files map (default "files")
   -out file
-        output go file (default "files.go")
+        Output go file (default "files.go")
   -p string
-        dir path with files to embed (default "./include")
+        Folder path with files to embed relative to current working directory. (default "./include")
   -pkg package
         package name of the go file (default "main")
-  -v    verbose
+  -v    Verbose
   -x string
-        pipe-separated list of files in include path to exclude.
+        Pipe-separated list of files in include path to exclude.
         Files in include folder or subfolders with matching name will be excluded.
         Surround whole list with quotes like: "file1 | file.* | img?/*png | file3"
         Wildcard expressions are supported.
 
 Wildcards:
 
--x and -i both support wildcard expressions. 
-Filenames and wilcards will be matched in any subfolder in the include path.
+-x and -i both support wildcard expressions. Filenames and wilcards will be matched in any subfolder in the include path.
 Matching follows the pattern defined in https://golang.org/pkg/path/filepath/#Match
 pattern:
         { term }
@@ -63,6 +67,7 @@ character-range:
         c           matches character c (c != '\\', '-', ']')
         '\\' c      matches character c
         lo '-' hi   matches character c for lo <= c <= hi
+
 
 ```
 Just be sure to re-run `statics` after modifying any of the files in your `./include` folder. My build script usually starts with something like `statics && go build`.
