@@ -54,8 +54,8 @@ The following items are customizable using the switches described below:
 Usage:
 
   statics [-p=%[1]s] [-out=%[2]s] [-pkg=%[3]s] 
-   [-map=%[4]s] [-bf="// +build !windows,!darwin"] [-a "filename | alias"] [-k]
-   [-x="file1 | file.* | img?/*png | file3"] [-i="file1 | file.* | img?/*png | file3"] [-v]
+   [-map=%[4]s] [-bf="// +build !windows,!darwin"] [-a "filename | alias"] [-f]
+   [-x="file1 | file[1-4].* | include/img?/*png | file3"] [-i="file1 | file[1-4].* | include/img?/*png | file3"] [-v]
 
 Flags:
   -p string
