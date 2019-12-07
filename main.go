@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 	"text/template"
 )
@@ -36,20 +35,23 @@ All of this can be customized.
 
 The following items are customizable using the switches described below:
 
-	- Output file name
-	- Package name
-	- Name of the file map
-	- Set one or more folders with files to import
-	- Store the file names with their path hierarchy preserved , or to flatten the path and just store the file names.
-	- Exclude files or subfolders from the chosen import folders by path or filename. 
-	- Include only specific files from the chosen import folders, which will cause the tool to only 
-      include the specified files.
-	- Use wildcards for both the exclude and include folder list.
-	- Set build tags to enable OS and architecture specific compilation.
-	- Set aliases for file names so you can store the file in the file map with a different name than the actual file name.
-	- For all arguments that accept multiple files or folders, you can either use a pipe-separated list 
-      surrounded by quotes or just set the argument multiple times, once for each file.
-		  -arg "item1 | item2 | item3"   -or-   -arg item1 -arg item2 -arg item3 
+- Output file name
+- Package name
+- Name of the file map
+- Set one or more folders with files to import
+- Store the file names with their path hierarchy preserved, 
+   or flatten the path and just store the file names.
+- Exclude files or subfolders from the chosen import folders by path or filename. 
+- Include only specific files from the chosen import folders, 
+    which will make Statics include only the specified files.
+- Use wildcards for both the exclude and include folder list.
+- Set build tags to enable OS and architecture specific compilation.
+- Set aliases for file names so you can store the file in the file map with a different name than the actual file name.
+- For all arguments that accept multiple files or folders, you can either use a pipe-separated list 
+   surrounded by quotes or just set the argument multiple times, once for each file.
+      -arg "item1 | item2 | item3"   -or-   -arg item1 -arg item2 -arg item3 
+
+Be sure to re-run 'statics' after adding or modifying any files in your './include' folder.  
 
 Usage:
 
@@ -58,76 +60,83 @@ Usage:
    [-x="file1 | file[1-4].* | include/img?/*png | file3"] [-i="file1 | file[1-4].* | include/img?/*png | file3"] [-v]
 
 Flags:
-  -p string
-        Folder path or paths with files to import relative to current working directory.
-		Specify multiple import paths with either a pipe-separated list 
-		or by specifying this argument multiple times.
-			-p "dir1 | dir2 | dir3"    -or-    -p dir1 -p dir2 -p dir3
-		Files stored in map will use path starting with specified import folder.
-        (default "%[1]s")
-  -o file
-        Output go file. If go extension is not specified, it will be added.
-        (default "%[2]s")
-  -pkg package
-        package name of the go file 
-        (default "%[3]s")
-  -map string
-        Name of the generated files map 
-        (default "%[4]s")
-  -f    Flatten path, stripping folders and just using base file names as keys in the file map.
-		File will be stored as files["filename"] instead of the default files["importfolder/dirname/filename"].
-  -a	Store file in the file map with a name other than it's original filename.
+-p      Import path[s]  
+        Folder path or paths with files to import relative to current working directory.  
+        Specify multiple import paths with either a pipe-separated list   
+        or by specifying this argument multiple times.  
+            -p "dir1 | dir2 | dir3"    -or-    -p dir1 -p dir2 -p dir3  
+        Files stored in map will use path starting with specified import folder.  
+        (default "-p %[1]s")
+-o      Output go file. If go extension is not specified, it will be added.  
+        (default "-o %[2]s")
+-pkg    package name of the go file 
+        (default "-pkg %[3]s")
+-map    Name of the generated files map 
+        (default "-map %[4]s")
+-f      Flatten path, stripping folders and just using base file names as keys in the file map.
+        File will be stored as files["filename"] instead of the default files["importfolder/dirname/filename"].
+-a	    Store file in the file map with a name other than it's original filename.
         Call this argument multiple times to set multiple aliases.
-        The parameter you pass to this argument will be a pipe-separated list with the first item
-		being the filename or path, then pipe, then the alias.
-		Aliased files will be stored in the same folder as the original file unless alias is a path
+        The parameter should look like "original name | alias"
+        Aliased files will be stored in the same folder as the original file unless alias is a path
            -a "filename1 | alias1" 
-			importfolder/filename1 --> files["importfolder/alias1"] 
-		   -a "filename1 | dir/alias1" 	
-            importfolder/filename1 --> files["dir/alias1"] 
+            ./importfolder/filename1 --> files["importfolder/alias1"] 
+           -a "filename1 | dir/alias1" 	
+            ./importfolder/filename1 --> files["dir/alias1"] 
            -f -a "filename1 | alias1" 
-			importfolder/filename1 --> files["alias1"]
-           Explicitly setting an alias with a path ignores flatten, allowing you to flatten everything but the aliased file.
+            ./importfolder/filename1 --> files["alias1"]
+           Explicitly setting an alias with a path ignores flatten, 
+            allowing you to flatten everything but the aliased file.
            -f -a "filename1 | dir/alias1"
-            importfolder/filename1 --> files["dir/alias1"] 
-  -bf string
-        Specify build flags to put at the top of the .go file.
-		Can be any of the following:
-			Single line
-				-bf "// +build !windows,!darwin"
-			Two lines joined with \n newline character
-				-bf "// +build !windows,!darwin\n// +build amd64"
-			Pipe-separated list
-				-bf "// +build !windows,!darwin | // +build amd64"
-			Same argument called multiple times
-				-bf "// +build !windows,!darwin" -bf "// +build amd64"
-        Additional line break is required after build flag and will be added automatically.
-		No validation is performed and anything you specify here will be inserted at the top of the file.
-  -x string
-		Specify files or folders in the import paths to exclude. 
+            ./importfolder/filename1 --> files["dir/alias1"] 
+-bt     Specify build tags to put at the top of the .go file.
         Can be any of the following:
-			File name
-			Path to file name beginning from import folder
-			Pipe-separated list of files or paths in import folders to exclude.
-			You can also specify this argument multiple times to exclude multiple files.
-        Files in import folders or subfolders with matching name will be excluded.
-        Surround pipe-lists with quotes like: "file1 | file[1-4].* | include/img?/*png | file3"
+            Single line
+                -bt "// +build !windows,!darwin"
+            Two lines joined with \n newline character
+                -bt "// +build !windows,!darwin\n// +build amd64"
+            Pipe-separated list
+                -bt "// +build !windows,!darwin | // +build amd64"
+            Same argument called multiple times
+                -bt "// +build !windows,!darwin" -bt "// +build amd64"
+        Go requires an additional line break after your build tags, which will be inserted automatically.
+        No validation is performed and anything you specify here will be inserted at the top of the file.
+-x      Specify files or folders in the import paths to exclude. 
+        Can be any of the following:
+            File name
+                -x file1
+            Path to file name beginning from import folder
+                -x "importfolder/dir1/file1"
+            Pipe-separated list of files or paths in import folders to exclude.
+                -x "file1 | file[1-4].* | include/img?/*png | file3"
+            You can also specify this argument multiple times to exclude multiple files.
+                -x file1 -x "file[1-4].*" -x "include/img?/*png" -x file3
+        Specifying a filename without the path will match that file anywhere in the import folder hierarchy.
         Wildcard expressions are supported. Use wildcards to exclude a whole folder: "include/folder/*"
-  -i string
-		Specify files in the include paths to include. If set, only the specified files will be included.
+-i      Specify files in the import paths to include. If set, only the specified files will be included.
         Can be any of the following:
-			File name
-			Path to file name beginning from import folder
-			Pipe-separated list of files or paths in import folder.
-			You can also specify this argument multiple times to include multiple files.
-        Only files in include folders or subfolders with matching name will be included.
-        Surround pipe-lists with quotes like:"file1 | file[1-4].* | include/img?/*png | file3"
-        Wildcard expressions are supported.
-  -v    Verbose
+            File name
+                -i file1
+            Path to file name beginning from import folder
+                -i "importfolder/dir1/file1"
+            Pipe-separated list of files or paths in import folders to exclude.
+                -i "file1 | file[1-4].* | include/img?/*png | file3"
+            You can also specify this argument multiple times to exclude multiple files.
+                -i file1 -i "file[1-4].*" -i "include/img?/*png" -i file3
+        Specifying a filename without the path will match that file anywhere in the import folder hierarchy.
+        Wildcard expressions are supported. Use wildcards to include a whole folder: "include/folder/*"
+-v      Verbose
 
 Wildcards:
--x and -i both support wildcard expressions. Filenames and wilcards will be matched in any 
-subfolder in the include path.
+-x and -i both support wildcard expressions. 
+Filenames with wilcards will be matched in any subfolder in the include path.
+If specifying a path with wildcards, the wildcards will not include anything beyond the current file or folder name.
+ The entire path starting from the import folder must be accounted for.
+    To include all the pngs in the import folder and it's subfolders:
+        -i "*png"
+    To include all the pngs in the subfolders ending with a number from 1 to 3 in an import folder called include:
+        -i "include/img[1-3]/*png"
+
 Matching follows the pattern defined in https://golang.org/pkg/path/filepath/#Match
 pattern:
         { term }
@@ -172,17 +181,17 @@ func NewArgs() Args {
 }
 
 type Args struct {
-	BuildFlags      []string
-	Excludes   		[]string
-	Includes   		[]string
-	ImportPaths     []string
-	GoFile          string
-	FlattenPath     bool
-	MapName         string
-	NameAliases     map[string]string
-	PackageName     string
-	Verbose         bool
-	Debug 			bool
+	BuildTags   []string
+	Excludes    []string
+	Includes    []string
+	ImportPaths []string
+	GoFile      string
+	FlattenPath bool
+	MapName     string
+	NameAliases map[string]string
+	PackageName string
+	Verbose     bool
+	Debug       bool
 }
 
 func (a *Args) parse() {
@@ -204,8 +213,6 @@ func (a *Args) parse() {
 			os.Exit(0)
 		case "v", "verbose":
 			args.Verbose = true
-		case "dbg":
-			args.Debug = true
 		case "o", "out":
 			o := get(arg, i+1)
 			if !strings.HasSuffix(o, ".go") {
@@ -219,9 +226,9 @@ func (a *Args) parse() {
 		case "map":
 			a.MapName = get(arg, i+1)
 			i += 1
-		case "bf":
-			bfs := a.parsePipeList(get(arg, i+1))
-			a.BuildFlags = append(a.BuildFlags, bfs...)
+		case "bt":
+			bts := a.parsePipeList(get(arg, i+1))
+			a.BuildTags = append(a.BuildTags, bts...)
 			i += 1
 		case "f":
 			a.FlattenPath = true
@@ -317,7 +324,7 @@ func (i *Importer) start() {
 		fmt.Println("Excludes:", strings.Join(args.Excludes, " | "))
 		fmt.Println("Includes:", strings.Join(args.Includes, " | "))
 		fmt.Println("Import paths:", 	strings.Join(args.ImportPaths, " | "))
-		fmt.Println("Build flags:", 	strings.Join(args.BuildFlags, " | "))
+		fmt.Println("Build flags:", 	strings.Join(args.BuildTags, " | "))
 		fmt.Println("Flatten path:", args.FlattenPath)
 	}
 
@@ -336,16 +343,16 @@ func (i *Importer) createFile() {
 	if args.Verbose {
 		fmt.Println("----")
 	}
-	if len(args.BuildFlags) > 0 {
-		for _, bf := range args.BuildFlags {
+	if len(args.BuildTags) > 0 {
+		for _, bt := range args.BuildTags {
 			if args.Verbose {
-				fmt.Println("Writing build flag: ", bf)
+				fmt.Println("Writing build tag: ", bt)
 			}
-			_, err = fmt.Fprintln(f, bf)
-			chk("writing build flag", err)
+			_, err = fmt.Fprintln(f, bt)
+			chk("writing build tag", err)
 		}
 		_, err := fmt.Fprintln(f, "")
-		chk("writing build flag", err)
+		chk("writing build tag", err)
 		if args.Verbose {
 			fmt.Println("----")
 		}
@@ -457,16 +464,3 @@ func chk(doing string, err error) {
 	}
 }
 
-func dbg(d ...interface{}) {
-	if args.Debug {
-		caller := ""
-		pc, _, _, ok := runtime.Caller(1)
-		details := runtime.FuncForPC(pc)
-		if ok && details != nil {
-			caller = details.Name()
-		}
-
-		fmt.Printf(">>> %s.", caller)
-		fmt.Println(d...)
-	}
-}
