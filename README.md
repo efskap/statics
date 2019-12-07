@@ -27,8 +27,7 @@ The following items are customizable using the switches described below:
 	- Set one or more folders with files to import
 	- Store the file names with their path hierarchy preserved , or to flatten the path and just store the file names.
 	- Exclude files or subfolders from the chosen import folders by path or filename. 
-	- Include only specific files from the chosen import folders, which will cause the tool to only 
-      include the specified files.
+	- Include only specific files from the chosen import folders, which will cause the tool to only include the specified files.
 	- Use wildcards for both the exclude and include folder list.
 	- Set build tags to enable OS and architecture specific compilation.
 	- Set aliases for file names so you can store the file in the file map with a different name than the actual file name.
@@ -39,8 +38,8 @@ The following items are customizable using the switches described below:
 Usage:
 
   statics [-p=./include] [-out=files.go] [-pkg=main] 
-   [-map=files] [-bf="// +build !windows,!darwin"] [-a "filename | alias"] [-k]
-   [-x="file1 | file.* | img?/*png | file3"] [-i="file1 | file.* | img?/*png | file3"] [-v]
+   [-map=files] [-bf="// +build !windows,!darwin"] [-a "filename | alias"] [-f]
+   [-x="file1 | file[1-4].* | include/img?/*png | file3"] [-i="file1 | file[1-4].* | include/img?/*png | file3"] [-v]
 
 Flags:
   -p string
