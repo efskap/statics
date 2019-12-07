@@ -43,9 +43,9 @@ Be sure to re-run 'statics' after adding or modifying any files in your './inclu
 
 Usage:
 
-  statics [-p=./include] [-out=files.go] [-pkg=main] 
-   [-map=files] [-bf="// +build !windows,!darwin"] [-a "filename | alias"] [-f]
-   [-x="file1 | file[1-4].* | include/img?/*png | file3"] [-i="file1 | file[1-4].* | include/img?/*png | file3"] [-v]
+  statics [-p=./include] [-out=files.go] [-pkg=main] [-v]
+   [-map=files] [-bt="// +build !windows,!darwin"] [-a "filename | alias"] [-f]
+   [-x="file1 | file[1-4].* | include/img?/*png | file3"] [-i="file1 | file[1-4].* | include/img?/*png | file3"] 
 
 Flags:  
 -p      Import path[s]  

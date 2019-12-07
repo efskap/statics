@@ -56,7 +56,7 @@ Be sure to re-run 'statics' after adding or modifying any files in your './inclu
 Usage:
 
   statics [-p=%[1]s] [-out=%[2]s] [-pkg=%[3]s] 
-   [-map=%[4]s] [-bf="// +build !windows,!darwin"] [-a "filename | alias"] [-f]
+   [-map=%[4]s] [-bt="// +build !windows,!darwin"] [-a "filename | alias"] [-f]
    [-x="file1 | file[1-4].* | include/img?/*png | file3"] [-i="file1 | file[1-4].* | include/img?/*png | file3"] [-v]
 
 Flags:
